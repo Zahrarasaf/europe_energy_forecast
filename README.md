@@ -1,10 +1,9 @@
 europe_energy_forecast/
 ├─ data/
 │  ├─ raw/
-│  │   ├─ time_series_60min_singleindex_1.csv   #
-│  │   └─ time_series_60min_singleindex_2.csv   # 
+│  │   ├─ time_series_60min_singleindex_1.csv
+│  │   └─ time_series_60min_singleindex_2.csv
 │  └─ processed/
-│       └─ .gitkeep
 ├─ notebooks/
 │  └─ 01_EDA_and_Modeling.ipynb
 ├─ src/
