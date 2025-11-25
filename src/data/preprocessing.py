@@ -42,11 +42,10 @@ class EnergyDataPreprocessor:
         df['quarter'] = df.index.quarter
         
         # Safe week calculation
-        try:
-            df['week_of_year'] = df.index.isocalendar().week
-        except:
-            # Fallback method
-            df['week_of_year'] = (df.index.dayofyear / 7).astype(int)
+try:
+    df['week_of_year'] = df.index.isocalendar().week.astype(int)
+except:
+    df['week_of_year'] = (df.index.dayofyear / 7).astype(int)
         
         # Cyclical encoding
         df['month_sin'] = np.sin(2 * np.pi * df['month'] / 12)
