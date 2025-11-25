@@ -1,37 +1,58 @@
+import pandas as pd
+import numpy as np
+from config.research_config import config
 from src.data.preprocessing import EnergyDataPreprocessor
-from src.analysis.statistical_tests import AdvancedStatisticalTests
-from src.models.advanced_models import AdvancedEnergyModels
+from src.models.transformer_model import EnergyTransformer
+import torch
+import torch.optim as optim
 
 def main():
-    print("=== European Energy Forecasting - PhD Level ===")
+    print("=== PhD-Level Energy Forecasting ===")
     
-    # 1. Data preprocessing
+    # 1. Load and preprocess data
     print("1. Loading and preprocessing data...")
-    preprocessor = EnergyDataPreprocessor()
+    preprocessor = EnergyDataPreprocessor(config)
     df = preprocessor.load_data()
-    df_processed = preprocessor.create_features(df)
+    df_processed = preprocessor.create_advanced_features(df)
     
-    # 2. Statistical analysis
-    print("2. Performing statistical tests...")
-    analyzer = AdvancedStatisticalTests(df)
-    for country in preprocessor.countries:
-        stationarity = analyzer.stationarity_analysis(country)
-        print(f"{country} - Stationary: {stationarity['is_stationary']}")
+    print(f"Processed data shape: {df_processed.shape}")
+    print(f"Features: {len([col for col in df_processed.columns if col not in config.COUNTRIES])}")
     
-    # 3. Prepare data for modeling
-    print("3. Preparing training data...")
-    X_train, X_test, y_train, y_test = preprocessor.prepare_train_test(df_processed)
+    # 2. Prepare sequences for deep learning
+    print("2. Preparing sequences for Transformer...")
+    X_sequences, y_sequences = preprocessor.prepare_sequences(df_processed, config.TARGET_COUNTRY)
     
-    # 4. Train advanced models
-    print("4. Training advanced models...")
-    model_trainer = AdvancedEnergyModels()
-    model_trainer.create_ensemble()
-    results = model_trainer.evaluate_models(X_train, X_test, y_train, y_test)
+    print(f"Sequences shape: {X_sequences.shape}")
+    print(f"Target shape: {y_sequences.shape}")
     
-    # 5. Display results
-    print("\n=== Model Results ===")
-    for model_name, metrics in results.items():
-        print(f"{model_name}: RMSE = {metrics['rmse']:.2f}, MAE = {metrics['mae']:.2f}")
+    # 3. Initialize Transformer model
+    print("3. Initializing Transformer model...")
+    input_dim = X_sequences.shape[2]
+    model = EnergyTransformer(input_dim, config.SEQUENCE_LENGTH)
+    
+    # 4. Train-test split
+    split_idx = int(len(X_sequences) * (1 - config.TEST_SIZE))
+    X_train, X_test = X_sequences[:split_idx], X_sequences[split_idx:]
+    y_train, y_test = y_sequences[:split_idx], y_sequences[split_idx:]
+    
+    # Convert to PyTorch tensors
+    X_train_tensor = torch.FloatTensor(X_train)
+    y_train_tensor = torch.FloatTensor(y_train)
+    X_test_tensor = torch.FloatTensor(X_test)
+    y_test_tensor = torch.FloatTensor(y_test)
+    
+    print(f"Training samples: {len(X_train)}")
+    print(f"Testing samples: {len(X_test)}")
+    
+    # 5. Training setup
+    criterion = torch.nn.MSELoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    
+    print("4. Starting training...")
+    # Training loop would go here
+    
+    print("=== Setup Complete ===")
+    print("Next steps: Implement training loop and evaluation")
 
 if __name__ == "__main__":
     main()
