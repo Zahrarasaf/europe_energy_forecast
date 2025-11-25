@@ -28,7 +28,7 @@ class EnergyTransformer(nn.Module):
         x = self.input_projection(x)
         x = self.pos_encoder(x)
         x = self.transformer(x)
-        x = x[:, -1, :]
+        x = x[:, -1, :]  # Take last sequence output
         return self.output_layers(x)
 
 class PositionalEncoding(nn.Module):
