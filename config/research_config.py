@@ -5,12 +5,10 @@ from typing import List
 class ResearchConfig:
     # Data parameters
     DATA_PATH: str = "data/europe_energy.csv"
-    COUNTRIES: List[str] = ['DE', 'FR', 'IT', 'ES', 'UK', 'NL', 'BE', 'PL']
+    COUNTRIES: List[str] = None
     TARGET_COUNTRY: str = 'DE'
     
     # Time parameters
-    START_DATE: str = "2006-01-01"
-    END_DATE: str = "2017-12-31"
     TEST_SIZE: float = 0.2
     FORECAST_HORIZON: int = 30
     
@@ -20,7 +18,11 @@ class ResearchConfig:
     EPOCHS: int = 100
     
     # Advanced features
-    LAGS: List[int] = [1, 7, 30, 365]
-    ROLLING_WINDOWS: List[int] = [7, 30, 90]
+    LAGS: List[int] = [1, 7, 30]
+    ROLLING_WINDOWS: List[int] = [7, 30]
+
+    def __post_init__(self):
+        if self.COUNTRIES is None:
+            self.COUNTRIES = ['DE', 'FR', 'IT', 'ES', 'UK', 'NL', 'BE', 'PL']
 
 config = ResearchConfig()
