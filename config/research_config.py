@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import List, Dict, Any
-import os
 
 @dataclass
 class ResearchConfig:
@@ -17,30 +16,17 @@ class ResearchConfig:
     
     # Advanced modeling
     TRANSFORMER_PARAMS: Dict[str, Any] = None
-    HYBRID_MODEL_PARAMS: Dict[str, Any] = None
-    
-    # Experiment tracking
-    MLFLOW_TRACKING_URI: str = "mlruns"
-    WANDB_PROJECT: str = "energy_forecasting_phd"
     
     def __post_init__(self):
         if self.COUNTRIES is None:
-            self.COUNTRIES = ["Germany", "France", "Italy", "Spain", "UK"]
+            self.COUNTRIES = ["Germany", "France", "Italy", "Spain"]
         
         if self.TRANSFORMER_PARAMS is None:
             self.TRANSFORMER_PARAMS = {
                 "d_model": 64,
                 "nhead": 4,
                 "num_layers": 3,
-                "dropout": 0.1,
-                "sequence_length": 30
-            }
-        
-        if self.HYBRID_MODEL_PARAMS is None:
-            self.HYBRID_MODEL_PARAMS = {
-                "base_models": ["xgboost", "lightgbm", "random_forest", "prophet"],
-                "meta_model": "linear"
+                "dropout": 0.1
             }
 
-# Global configuration
 config = ResearchConfig()
