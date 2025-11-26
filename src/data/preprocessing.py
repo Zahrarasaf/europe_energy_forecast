@@ -41,11 +41,12 @@ class EnergyDataPreprocessor:
         df['day_of_week'] = df.index.dayofweek
         df['quarter'] = df.index.quarter
         
-        # Safe week calculation
-try:
-    df['week_of_year'] = df.index.isocalendar().week.astype(int)
-except:
-    df['week_of_year'] = (df.index.dayofyear / 7).astype(int)
+        # FIXED: Safe week calculation
+        try:
+            df['week_of_year'] = df.index.isocalendar().week.astype(int)
+        except:
+            # Fallback method
+            df['week_of_year'] = (df.index.dayofyear / 7).astype(int)
         
         # Cyclical encoding
         df['month_sin'] = np.sin(2 * np.pi * df['month'] / 12)
@@ -57,10 +58,10 @@ except:
         target_country = self.config.TARGET_COUNTRY
         print(f"Creating features for target country: {target_country}")
         
-        for lag in [1, 7, 30]:  # Reduced lags for stability
+        for lag in [1, 7, 30]:
             df[f'{target_country}_lag_{lag}'] = df[target_country].shift(lag)
         
-        for window in [7, 30]:  # Reduced windows
+        for window in [7, 30]:
             df[f'{target_country}_rolling_mean_{window}'] = df[target_country].rolling(window).mean()
             df[f'{target_country}_rolling_std_{window}'] = df[target_country].rolling(window).std()
         
