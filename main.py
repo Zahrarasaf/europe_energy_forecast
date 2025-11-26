@@ -1,26 +1,60 @@
-import pandas as pd
 import os
-from download_from_drive import download_real_dataset
+import sys
+
+sys.path.append('src')
 
 def main():
-    print("🎯 European Energy Forecasting - REAL Dataset")
-    print("=" * 50)
+    print("🎯 European Energy Forecasting - REAL Calculation")
+    print("=" * 60)
     
-    # Load your REAL dataset
-    df = download_real_dataset()
-    
-    if df is not None:
-        print(f"✅ Using your REAL dataset: {df.shape}")
+    try:
+        from data_collection.data_loader import download_real_dataset
+        from models.real_improvement_calculator import RealImprovementCalculator
         
-        # Calculate REAL improvement
-        improvement = calculate_real_improvement(df)
+        # 1. Load your REAL dataset
+        print("1. Loading your dataset...")
+        df = download_real_dataset()
         
-        if improvement:
-            print(f"🎯 REAL RESULT: {improvement:.1f}% improvement")
-        else:
-            print("❌ Could not calculate improvement")
-    else:
-        print("🚨 Please ensure your Google Drive file is accessible")
+        if df is None:
+            print("❌ Could not load dataset")
+            return
+        
+        print(f"✅ Dataset loaded: {df.shape}")
+        
+        # 2. Calculate REAL improvement
+        print("2. Calculating REAL improvement from your data...")
+        calculator = RealImprovementCalculator()
+        
+        # Try different target columns
+        target_columns = [
+            'DE_load_actual_entsoe_transparency',
+            'DE_load_actual',
+            'load_actual_DE'
+        ]
+        
+        improvement = None
+        for target_col in target_columns:
+            if target_col in df.columns:
+                improvement = calculator.calculate_real_improvement(df, target_col)
+                if improvement is not None:
+                    break
+        
+        if improvement is None:
+            print("❌ Could not calculate improvement from your data")
+            return
+        
+        # 3. Show REAL results
+        results = calculator.get_detailed_results()
+        print(f"\n🎯 REAL RESULTS FROM YOUR DATA:")
+        print(f"   Baseline MAE: {results['baseline_mae']:.2f}")
+        print(f"   Advanced MAE: {results['advanced_mae']:.2f}")
+        print(f"   Improvement: {results['improvement_percentage']:+.1f}%")
+        print(f"   Real Calculation: {results['is_real_calculation']}")
+        
+        print(f"\n✅ You can use {improvement:.1f}% in your CV - it's REAL!")
+        
+    except Exception as e:
+        print(f"❌ Error: {e}")
 
 if __name__ == "__main__":
     main()
