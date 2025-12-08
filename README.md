@@ -187,7 +187,5 @@ European energy community for open data initiatives
 
 Academic advisors for research guidance
 
-📞 Contact
-Researcher: Zahra Rasaf
-Project:  Research in Energy Informatics
-Focus: Machine Learning for Energy Forecasting
+
+
